@@ -7,6 +7,7 @@ export class App {
     constructor() {
         console.log("App initialized");
         this.todoListModel = new TodoListModel();
+        this.todoListModel.syncTodo();
     }
 
     mount() {
