@@ -16,23 +16,32 @@ export class TodoListModel extends EventEmitter {
     emitChange() { this.emit("change"); }
 
     addTodo(todoItem) {
-        this.items.push(todoItem);
-        this.dbAdd(todoItem);
-        this.emitChange();
+        //this.items.push(todoItem);
+        this.dbAdd(todoItem).then(() => {
+            return this.syncTodo();
+        }).then(() => {
+            this.emitChange();
+        })
     }
 
     updateTodo({ id, completed }) {
         const todoItem = this.items.find(todo => todo.id === id);
         if (!todoItem) return;
         todoItem.completed = completed;
-        this.dbUpdate(todoItem);
-        this.emitChange();
+        this.dbUpdate(todoItem).then(() => {
+            return this.syncTodo();
+        }).then(() => {
+            this.emitChange();
+        });
     }
 
     deleteTodo({ id }) {
         this.items = this.items.filter(todo => todo.id != id);
-        this.dbDelete(id);
-        this.emitChange();
+        this.dbDelete(id).then(() => {
+            return this.syncTodo();
+        }).then(() => {
+            this.emitChange();
+        });
     }
 
     syncTodo() {
